@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0wjvg18" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="Catalyst" name="Catalyst Workflow" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1h37bj8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1h37bj8" sourceRef="StartEvent_1" targetRef="BearerToken" />
+    <bpmn:serviceTask id="BearerToken" name="Generating the Bearer Token" camunda:type="external" camunda:topic="RestApiConector">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="URL">https://login.microsoftonline.com/5b973f99-77df-4beb-b27d-aa0c70b8482c/oauth2/token</camunda:inputParameter>
+          <camunda:inputParameter name="PayloadType">Json</camunda:inputParameter>
+          <camunda:inputParameter name="Payload">{
+  "client_id": "$client_id",
+  "client_secret": "$client_secret",
+  "grant_type": "$grant_type",
+  "resource": "$resource"
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Method">Get</camunda:inputParameter>
+          <camunda:inputParameter name="IsAuthentication">true</camunda:inputParameter>
+          <camunda:inputParameter name="Content-Type">application/x-www-form-urlencoded</camunda:inputParameter>
+          <camunda:inputParameter name="ResposeMapping">{
+    "token_type": "$token_type",
+    "access_token": "$access_token"
+}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1h37bj8</bpmn:incoming>
+      <bpmn:outgoing>Flow_058r8q2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_058r8q2" sourceRef="BearerToken" targetRef="Extraction_API" />
+    <bpmn:userTask id="DummyStop" name="DummyStop">
+      <bpmn:incoming>Flow_0twz8ob</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Extraction_API" name="Extraction API" camunda:type="external" camunda:topic="RestApiConector">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="URL">https://mde-uat.ey.com/mde/api/transformers/ReportingService/44e40d43-ffba-4f30-8c3b-8eef601675c0/triggertransformer</camunda:inputParameter>
+          <camunda:inputParameter name="PayloadType">Json</camunda:inputParameter>
+          <camunda:inputParameter name="Payload">{
+"Parameters": [
+        {
+            "FileID": "380a8982-d4e9-4402-97a5-4f7a9339f180",
+            "EventRequestId": "380a8982-d4e9-4402-97a5-4f7a9339f180",
+            "ContainerId": "containername"
+        }
+    ],
+    "CustomData": {
+        "Env": ""
+    }
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Method">Post</camunda:inputParameter>
+          <camunda:inputParameter name="Content-Type">application/json</camunda:inputParameter>
+          <camunda:inputParameter name="ResposeMapping">{
+    "transformerRunId": "$transformerRunId",
+    "transformerRunStatus": "$transformerRunStatus"
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Authorization">${token_type}</camunda:inputParameter>
+          <camunda:inputParameter name="Token">${access_token}</camunda:inputParameter>
+          <camunda:inputParameter name="Headers">{"api-key" : "eA6iNfkrGgLv8lMjEAAXrNwxKGQQfj24"}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_058r8q2</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tejhxp</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Status_check_API" name="Status check API" camunda:type="external" camunda:topic="RestApiConector">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="URL">https://mde-uat.ey.com/mde/api/transformers/runs/$ApplicationName/$transformerRunId/status?api-version=1.0</camunda:inputParameter>
+          <camunda:inputParameter name="PayloadType">Json</camunda:inputParameter>
+          <camunda:inputParameter name="Method">Get</camunda:inputParameter>
+          <camunda:inputParameter name="ResposeMapping">{
+    "transformerRunId": "$transformerRunId",
+    "transformerRunStatus": "$transformerRunStatus"
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Authorization">${token_type}</camunda:inputParameter>
+          <camunda:inputParameter name="Token">${access_token}</camunda:inputParameter>
+          <camunda:inputParameter name="Headers">{"api-key" : "eA6iNfkrGgLv8lMjEAAXrNwxKGQQfj24"}</camunda:inputParameter>
+          <camunda:inputParameter name="ApplicationName">ReportingService</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_09qx7zs</bpmn:incoming>
+      <bpmn:incoming>Flow_1tejhxp</bpmn:incoming>
+      <bpmn:outgoing>Flow_1s1bn8m</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1s1bn8m" sourceRef="Status_check_API" targetRef="Gateway_15h4pz4" />
+    <bpmn:serviceTask id="calling_Event_API" name="calling Event API" camunda:type="external" camunda:topic="RestApiConector">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="URL">https://mde-uat.ey.com/mde/api/transformers/Orbitax/7ecf9d76-7145-4e9e-a5dc-50cc54828c18/triggertransformer</camunda:inputParameter>
+          <camunda:inputParameter name="PayloadType">Json</camunda:inputParameter>
+          <camunda:inputParameter name="Method">Post</camunda:inputParameter>
+          <camunda:inputParameter name="ResposeMapping">{
+    "transformerRunId": "$transformerRunId",
+    "transformerRunStatus": "$transformerRunStatus",
+"result":"$result"
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Authorization">${token_type}</camunda:inputParameter>
+          <camunda:inputParameter name="Token">${access_token}</camunda:inputParameter>
+          <camunda:inputParameter name="Headers">{"api-key" : "3KdlSLytX6juaHpnCMdu2Puk84wq8C1w"}</camunda:inputParameter>
+          <camunda:inputParameter name="Payload">{
+    "Parameters": [
+        {
+            "MessageType": "DataEvent",
+            "DataType": "FinancialData",
+            "FileType": "Json",
+            "MetaData": {
+                "company_id": "Testing898989",
+                "workspace_id": "c94fba884e1028f606b68759e59e0d39",
+                "eventrequestid": "9d09d615-849b-40f7-b0d1-9dc965f6d592",
+                "FileName": "OrbitaxTesting.json",
+                "FileLink": "aHR0cHM6Ly9vcmJpdGF4dG9leS5ibG9iLmNvcmUud2luZG93cy5uZXQvdG9leS9UcmlhbFJ1bjE4NTAuanNvbg==",
+                "x-ms-version": "2017-11-09"
+            }
+        }
+    ],
+    "CustomData": {
+        "Env": ""
+    }
+}</camunda:inputParameter>
+          <camunda:inputParameter name="Content-Type">application/json</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0jf8z8m</bpmn:incoming>
+      <bpmn:outgoing>Flow_0twz8ob</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0twz8ob" sourceRef="calling_Event_API" targetRef="DummyStop" />
+    <bpmn:exclusiveGateway id="Gateway_15h4pz4">
+      <bpmn:incoming>Flow_1s1bn8m</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jf8z8m</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ri9pna</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0jf8z8m" name="Success" sourceRef="Gateway_15h4pz4" targetRef="calling_Event_API">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${transformerRunStatus == 'Success'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateCatchEvent id="Event_0u7vpnd">
+      <bpmn:incoming>Flow_1ri9pna</bpmn:incoming>
+      <bpmn:outgoing>Flow_09qx7zs</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1plwhgz">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT30S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1ri9pna" name="Pending" sourceRef="Gateway_15h4pz4" targetRef="Event_0u7vpnd">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${transformerRunStatus != 'Success'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_09qx7zs" sourceRef="Event_0u7vpnd" targetRef="Status_check_API" />
+    <bpmn:sequenceFlow id="Flow_1tejhxp" sourceRef="Extraction_API" targetRef="Status_check_API" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Catalyst">
+      <bpmndi:BPMNEdge id="Flow_1s1bn8m_di" bpmnElement="Flow_1s1bn8m">
+        <di:waypoint x="700" y="117" />
+        <di:waypoint x="755" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_058r8q2_di" bpmnElement="Flow_058r8q2">
+        <di:waypoint x="330" y="117" />
+        <di:waypoint x="390" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h37bj8_di" bpmnElement="Flow_1h37bj8">
+        <di:waypoint x="178" y="117" />
+        <di:waypoint x="230" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0twz8ob_di" bpmnElement="Flow_0twz8ob">
+        <di:waypoint x="990" y="117" />
+        <di:waypoint x="1070" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jf8z8m_di" bpmnElement="Flow_0jf8z8m">
+        <di:waypoint x="805" y="117" />
+        <di:waypoint x="890" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="826" y="99" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ri9pna_di" bpmnElement="Flow_1ri9pna">
+        <di:waypoint x="780" y="142" />
+        <di:waypoint x="780" y="310" />
+        <di:waypoint x="668" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="789" y="223" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09qx7zs_di" bpmnElement="Flow_09qx7zs">
+        <di:waypoint x="650" y="292" />
+        <di:waypoint x="650" y="157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tejhxp_di" bpmnElement="Flow_1tejhxp">
+        <di:waypoint x="490" y="117" />
+        <di:waypoint x="600" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_19618cf" bpmnElement="Status_check_API">
+        <dc:Bounds x="600" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_15h4pz4_di" bpmnElement="Gateway_15h4pz4" isMarkerVisible="true">
+        <dc:Bounds x="755" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1bb2htz" bpmnElement="calling_Event_API">
+        <dc:Bounds x="890" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0xiw9zw_di" bpmnElement="DummyStop">
+        <dc:Bounds x="1070" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="142" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ccibzk_di" bpmnElement="BearerToken">
+        <dc:Bounds x="230" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1livkpb" bpmnElement="Extraction_API">
+        <dc:Bounds x="390" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xfrpgx_di" bpmnElement="Event_0u7vpnd">
+        <dc:Bounds x="632" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
