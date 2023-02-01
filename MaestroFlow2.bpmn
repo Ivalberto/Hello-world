@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1t16dzd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.1.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:collaboration id="Collaboration_0o2yrtq">
+    <bpmn:extensionElements />
+    <bpmn:participant id="Participant_00j0gx2" name="Engagement" processRef="engage" />
+  </bpmn:collaboration>
+  <bpmn:process id="engage" name="Engagement" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1vg77if">
+      <bpmn:lane id="Lane_1ymjz2q" name="Any User">
+        <bpmn:extensionElements />
+        <bpmn:flowNodeRef>init_project_status</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>parallelGateway</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_14pkrxi" name="Close">
+        <bpmn:flowNodeRef>close_engagement_closed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>close_engagement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>close_engagement_status</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>close_project_status</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>project_status_closed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0yh0wya</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_107g6ub</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_11597bd" name="Roll Over">
+        <bpmn:flowNodeRef>rollover_engagement_closed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>rollover_engagement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>rollover_engagement_status</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0vr8zqn" name="SetUp">
+        <bpmn:flowNodeRef>setup_engagement_status</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>review_sow</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1d7ohni</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>review_sow2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>sow_prepared</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0mr88uz</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>signdocument</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>waitsign</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1oxv7uw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1tbiuma</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1syefru</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>setup_engagement_closed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>setup_engagement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0fehdgo</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_1xtokkj" sourceRef="StartEvent_1" targetRef="init_project_status" />
+    <bpmn:sequenceFlow id="Flow_11do4ng" sourceRef="init_project_status" targetRef="parallelGateway" />
+    <bpmn:sequenceFlow id="Flow_0ptb48h" sourceRef="rollover_engagement_closed" targetRef="Gateway_0yh0wya" />
+    <bpmn:sequenceFlow id="Flow_12bgief" sourceRef="close_engagement_closed" targetRef="Gateway_0yh0wya" />
+    <bpmn:sequenceFlow id="Flow_1hage7q" sourceRef="parallelGateway" targetRef="setup_engagement" />
+    <bpmn:sequenceFlow id="Flow_07f8vn1" name="xxx" sourceRef="parallelGateway" targetRef="close_engagement" />
+    <bpmn:sequenceFlow id="Flow_1dpt4x0" sourceRef="close_engagement_status" targetRef="close_engagement_closed" />
+    <bpmn:sequenceFlow id="Flow_0muyei7" sourceRef="close_engagement" targetRef="close_engagement_status" />
+    <bpmn:sequenceFlow id="Flow_0ufm9sg" sourceRef="rollover_engagement_status" targetRef="rollover_engagement_closed" />
+    <bpmn:sequenceFlow id="Flow_1ulphm5" sourceRef="rollover_engagement" targetRef="rollover_engagement_status" />
+    <bpmn:sequenceFlow id="Flow_0v9bozw" sourceRef="setup_engagement_status" targetRef="sow_prepared" />
+    <bpmn:sequenceFlow id="Flow_0obq4c5" sourceRef="setup_engagement" targetRef="setup_engagement_status" />
+    <bpmn:sequenceFlow id="Flow_0i8za4c" name="Yes" sourceRef="Gateway_0fehdgo" targetRef="Activity_0mr88uz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0bdvv9c" name="Not" sourceRef="Gateway_0fehdgo" targetRef="Activity_1d7ohni">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1tgjn5y" sourceRef="Activity_1d7ohni" targetRef="review_sow2" />
+    <bpmn:sequenceFlow id="Flow_04zt1db" sourceRef="setup_engagement_closed" targetRef="Gateway_0yh0wya" />
+    <bpmn:sequenceFlow id="Flow_03ji3se" sourceRef="sow_prepared" targetRef="review_sow" />
+    <bpmn:sequenceFlow id="Flow_1oszu5s" sourceRef="review_sow2" targetRef="sow_prepared" />
+    <bpmn:sequenceFlow id="Flow_0vrenwk" sourceRef="Activity_0mr88uz" targetRef="signdocument" />
+    <bpmn:sequenceFlow id="Flow_00ha08x" sourceRef="signdocument" targetRef="waitsign" />
+    <bpmn:sequenceFlow id="Flow_0y6tw8c" sourceRef="waitsign" targetRef="Activity_1syefru" />
+    <bpmn:sequenceFlow id="Flow_1w3xycw" name="Signed" sourceRef="Gateway_1tbiuma" targetRef="Activity_1oxv7uw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${sign}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_02gxtef" name="notSigned" sourceRef="Gateway_1tbiuma" targetRef="waitsign">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!sign}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1mfhtrz" sourceRef="Activity_1oxv7uw" targetRef="setup_engagement_closed" />
+    <bpmn:sequenceFlow id="Flow_15nd5eg" sourceRef="review_sow" targetRef="Gateway_0fehdgo" />
+    <bpmn:sequenceFlow id="Flow_05u0k9j" sourceRef="Activity_1syefru" targetRef="Gateway_1tbiuma" />
+    <bpmn:sequenceFlow id="Flow_02wbv6t" sourceRef="project_status_closed" targetRef="Event_107g6ub" />
+    <bpmn:sequenceFlow id="Flow_1aan1v3" name="continue" sourceRef="Gateway_0yh0wya" targetRef="close_project_status" />
+    <bpmn:sequenceFlow id="Flow_00kcu2j" sourceRef="close_project_status" targetRef="project_status_closed" />
+    <bpmn:sequenceFlow id="Flow_0n4wgei" sourceRef="parallelGateway" targetRef="rollover_engagement" />
+    <bpmn:startEvent id="StartEvent_1" name="MaestroFlow">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="client_init">
+          <camunda:formField id="client_init" label="Client name" type="string" />
+          <camunda:formField id="document_init" label="Document name" type="string" />
+          <camunda:formField id="duedays_init" label="SLA Indicators" type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1xtokkj</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_0fehdgo" name="Approved?">
+      <bpmn:incoming>Flow_15nd5eg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0i8za4c</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0bdvv9c</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_107g6ub">
+      <bpmn:incoming>Flow_02wbv6t</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1x1g8eh" camunda:type="external" camunda:topic="endE" />
+    </bpmn:endEvent>
+    <bpmn:userTask id="setup_engagement" name="create SOW" camunda:formKey="embedded:deployment:setupEngamement.html">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1hage7q</bpmn:incoming>
+      <bpmn:outgoing>Flow_0obq4c5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:parallelGateway id="Gateway_0yh0wya" name="converge">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0ptb48h</bpmn:incoming>
+      <bpmn:incoming>Flow_12bgief</bpmn:incoming>
+      <bpmn:incoming>Flow_04zt1db</bpmn:incoming>
+      <bpmn:outgoing>Flow_1aan1v3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:userTask id="project_status_closed" name="Projec status closed">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="project_status">
+          <camunda:formField id="sow_status" label="Sow status" type="string" />
+          <camunda:formField id="project_status" label="Project status" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00kcu2j</bpmn:incoming>
+      <bpmn:outgoing>Flow_02wbv6t</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:manualTask id="close_project_status" name="project_status">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">closed</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1aan1v3</bpmn:incoming>
+      <bpmn:outgoing>Flow_00kcu2j</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="setup_engagement_closed" name="Setup Engagement closed">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="setup_Engagement_status">closed</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1mfhtrz</bpmn:incoming>
+      <bpmn:outgoing>Flow_04zt1db</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:serviceTask id="Activity_1syefru" name="Signed?" camunda:type="external" camunda:topic="getDocuSignStatus_rest_xx">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Autori" />
+          <camunda:outputParameter name="status" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0y6tw8c</bpmn:incoming>
+      <bpmn:outgoing>Flow_05u0k9j</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1tbiuma" name="Already Sign?">
+      <bpmn:incoming>Flow_05u0k9j</bpmn:incoming>
+      <bpmn:outgoing>Flow_1w3xycw</bpmn:outgoing>
+      <bpmn:outgoing>Flow_02gxtef</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:manualTask id="Activity_1oxv7uw" name="Sow status Finalized">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="sow_status">Finalized</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1w3xycw</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mfhtrz</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:intermediateCatchEvent id="waitsign" name="waitSign">
+      <bpmn:incoming>Flow_02gxtef</bpmn:incoming>
+      <bpmn:incoming>Flow_00ha08x</bpmn:incoming>
+      <bpmn:outgoing>Flow_0y6tw8c</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0gfwadt">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT60S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="signdocument" name="SignDocument" camunda:type="external" camunda:topic="SendToDocuSign">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0vrenwk</bpmn:incoming>
+      <bpmn:outgoing>Flow_00ha08x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:manualTask id="Activity_0mr88uz" name="Sow status Issued">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="sow_status">Issued</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0i8za4c</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vrenwk</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="sow_prepared" name="Sow status Prepared">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="sow_status">prepared</camunda:outputParameter>
+          <camunda:outputParameter name="approved">${false}</camunda:outputParameter>
+          <camunda:outputParameter name="comments">${""}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0v9bozw</bpmn:incoming>
+      <bpmn:incoming>Flow_1oszu5s</bpmn:incoming>
+      <bpmn:outgoing>Flow_03ji3se</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:userTask id="review_sow2" name="Review Sow" camunda:formKey="embedded:deployment:show-file2.html">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1tgjn5y</bpmn:incoming>
+      <bpmn:outgoing>Flow_1oszu5s</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:manualTask id="Activity_1d7ohni" name="Sow status Prepared">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="sow_status">Needs revision</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0bdvv9c</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tgjn5y</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:userTask id="review_sow" name="Review Sow" camunda:formKey="embedded:deployment:show-file.html">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_03ji3se</bpmn:incoming>
+      <bpmn:outgoing>Flow_15nd5eg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:manualTask id="setup_engagement_status" name="Active project">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">active</camunda:outputParameter>
+          <camunda:outputParameter name="setup_Engagement_status">open</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0obq4c5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0v9bozw</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="rollover_engagement_status" name="Active project">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">active</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ulphm5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ufm9sg</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="close_engagement_status" name="Active project">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="project_status">active</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0muyei7</bpmn:incoming>
+      <bpmn:outgoing>Flow_1dpt4x0</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:userTask id="close_engagement" name="Close Engagement">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="closeengagement">
+          <camunda:formField id="closeengagement" label="Close engagement" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_07f8vn1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0muyei7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="rollover_engagement" name="Rollover Engagement">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="rolloverengagemet">
+          <camunda:formField id="rolloverengagemet" label="Rollover Engagement" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0n4wgei</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ulphm5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:manualTask id="rollover_engagement_closed" name="Rollover Engagement closed">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">active</camunda:outputParameter>
+          <camunda:outputParameter name="rollover_Engagement_status">closed</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ufm9sg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ptb48h</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:parallelGateway id="parallelGateway" name="parallel Task">
+      <bpmn:incoming>Flow_11do4ng</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hage7q</bpmn:outgoing>
+      <bpmn:outgoing>Flow_07f8vn1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0n4wgei</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:manualTask id="close_engagement_closed" name="Close Engagement closed">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">active</camunda:outputParameter>
+          <camunda:outputParameter name="close_Engagement_status">closed</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1dpt4x0</bpmn:incoming>
+      <bpmn:outgoing>Flow_12bgief</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="init_project_status" name="project_status">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="project_status">initiated</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1xtokkj</bpmn:incoming>
+      <bpmn:outgoing>Flow_11do4ng</bpmn:outgoing>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0o2yrtq">
+      <bpmndi:BPMNShape id="Participant_00j0gx2_di" bpmnElement="Participant_00j0gx2" isHorizontal="true">
+        <dc:Bounds x="156" y="64" width="3837" height="836" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0vr8zqn_di" bpmnElement="Lane_0vr8zqn" isHorizontal="true">
+        <dc:Bounds x="186" y="560" width="3807" height="340" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_11597bd_di" bpmnElement="Lane_11597bd" isHorizontal="true">
+        <dc:Bounds x="186" y="414" width="3807" height="146" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_14pkrxi_di" bpmnElement="Lane_14pkrxi" isHorizontal="true">
+        <dc:Bounds x="186" y="239" width="3807" height="175" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1ymjz2q_di" bpmnElement="Lane_1ymjz2q" isHorizontal="true">
+        <dc:Bounds x="186" y="64" width="3807" height="175" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0n4wgei_di" bpmnElement="Flow_0n4wgei">
+        <di:waypoint x="626" y="152" />
+        <di:waypoint x="626" y="480" />
+        <di:waypoint x="736" y="480" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="491" y="456" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00kcu2j_di" bpmnElement="Flow_00kcu2j">
+        <di:waypoint x="3105" y="320" />
+        <di:waypoint x="3175" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1aan1v3_di" bpmnElement="Flow_1aan1v3">
+        <di:waypoint x="2920" y="320" />
+        <di:waypoint x="3005" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2942" y="302" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02wbv6t_di" bpmnElement="Flow_02wbv6t">
+        <di:waypoint x="3275" y="320" />
+        <di:waypoint x="3382" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05u0k9j_di" bpmnElement="Flow_05u0k9j">
+        <di:waypoint x="2365" y="640" />
+        <di:waypoint x="2490" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15nd5eg_di" bpmnElement="Flow_15nd5eg">
+        <di:waypoint x="1506" y="640" />
+        <di:waypoint x="1601" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mfhtrz_di" bpmnElement="Flow_1mfhtrz">
+        <di:waypoint x="2735" y="640" />
+        <di:waypoint x="2845" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02gxtef_di" bpmnElement="Flow_02gxtef">
+        <di:waypoint x="2515" y="665" />
+        <di:waypoint x="2515" y="810" />
+        <di:waypoint x="2176" y="810" />
+        <di:waypoint x="2176" y="658" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2459" y="692" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1w3xycw_di" bpmnElement="Flow_1w3xycw">
+        <di:waypoint x="2540" y="640" />
+        <di:waypoint x="2635" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2537" y="622" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y6tw8c_di" bpmnElement="Flow_0y6tw8c">
+        <di:waypoint x="2194" y="640" />
+        <di:waypoint x="2265" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00ha08x_di" bpmnElement="Flow_00ha08x">
+        <di:waypoint x="2066" y="640" />
+        <di:waypoint x="2158" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vrenwk_di" bpmnElement="Flow_0vrenwk">
+        <di:waypoint x="1876" y="640" />
+        <di:waypoint x="1966" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oszu5s_di" bpmnElement="Flow_1oszu5s">
+        <di:waypoint x="1406" y="780" />
+        <di:waypoint x="1206" y="780" />
+        <di:waypoint x="1206" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03ji3se_di" bpmnElement="Flow_03ji3se">
+        <di:waypoint x="1256" y="640" />
+        <di:waypoint x="1406" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04zt1db_di" bpmnElement="Flow_04zt1db">
+        <di:waypoint x="2895" y="600" />
+        <di:waypoint x="2895" y="345" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tgjn5y_di" bpmnElement="Flow_1tgjn5y">
+        <di:waypoint x="1576" y="780" />
+        <di:waypoint x="1506" y="780" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bdvv9c_di" bpmnElement="Flow_0bdvv9c">
+        <di:waypoint x="1626" y="665" />
+        <di:waypoint x="1626" y="740" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1632" y="700" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i8za4c_di" bpmnElement="Flow_0i8za4c">
+        <di:waypoint x="1651" y="640" />
+        <di:waypoint x="1776" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1696" y="616" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0obq4c5_di" bpmnElement="Flow_0obq4c5">
+        <di:waypoint x="826" y="640" />
+        <di:waypoint x="896" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0v9bozw_di" bpmnElement="Flow_0v9bozw">
+        <di:waypoint x="996" y="640" />
+        <di:waypoint x="1156" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ulphm5_di" bpmnElement="Flow_1ulphm5">
+        <di:waypoint x="836" y="480" />
+        <di:waypoint x="906" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ufm9sg_di" bpmnElement="Flow_0ufm9sg">
+        <di:waypoint x="1006" y="480" />
+        <di:waypoint x="1106" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0muyei7_di" bpmnElement="Flow_0muyei7">
+        <di:waypoint x="836" y="320" />
+        <di:waypoint x="906" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dpt4x0_di" bpmnElement="Flow_1dpt4x0">
+        <di:waypoint x="1006" y="320" />
+        <di:waypoint x="1106" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07f8vn1_di" bpmnElement="Flow_07f8vn1">
+        <di:waypoint x="626" y="152" />
+        <di:waypoint x="626" y="320" />
+        <di:waypoint x="736" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="633" y="233" width="16" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hage7q_di" bpmnElement="Flow_1hage7q">
+        <di:waypoint x="626" y="152" />
+        <di:waypoint x="626" y="640" />
+        <di:waypoint x="726" y="640" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="482" y="690" width="28" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12bgief_di" bpmnElement="Flow_12bgief">
+        <di:waypoint x="1206" y="320" />
+        <di:waypoint x="2870" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ptb48h_di" bpmnElement="Flow_0ptb48h">
+        <di:waypoint x="1206" y="480" />
+        <di:waypoint x="2895" y="480" />
+        <di:waypoint x="2895" y="345" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11do4ng_di" bpmnElement="Flow_11do4ng">
+        <di:waypoint x="546" y="127" />
+        <di:waypoint x="601" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xtokkj_di" bpmnElement="Flow_1xtokkj">
+        <di:waypoint x="318" y="127" />
+        <di:waypoint x="446" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1342evy_di" bpmnElement="init_project_status">
+        <dc:Bounds x="446" y="87" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1ne7s25" bpmnElement="close_engagement_closed">
+        <dc:Bounds x="1106" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0js19hz_di" bpmnElement="parallelGateway">
+        <dc:Bounds x="601" y="102" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="595" y="78" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_19u4nv6" bpmnElement="rollover_engagement_closed">
+        <dc:Bounds x="1106" y="440" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1iggv0h_di" bpmnElement="rollover_engagement">
+        <dc:Bounds x="736" y="440" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12h29df_di" bpmnElement="close_engagement">
+        <dc:Bounds x="736" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0pkec2i" bpmnElement="close_engagement_status">
+        <dc:Bounds x="906" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1t5ijtt" bpmnElement="rollover_engagement_status">
+        <dc:Bounds x="906" y="440" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0sf6i3n" bpmnElement="setup_engagement_status">
+        <dc:Bounds x="896" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_053ku65" bpmnElement="review_sow">
+        <dc:Bounds x="1406" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1q8azsz" bpmnElement="Activity_1d7ohni">
+        <dc:Bounds x="1576" y="740" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_134m2ky" bpmnElement="review_sow2">
+        <dc:Bounds x="1406" y="740" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0sdjqve" bpmnElement="sow_prepared">
+        <dc:Bounds x="1156" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1vsg2ov" bpmnElement="Activity_0mr88uz">
+        <dc:Bounds x="1776" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s7rq40_di" bpmnElement="signdocument">
+        <dc:Bounds x="1966" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1htpi7k_di" bpmnElement="waitsign">
+        <dc:Bounds x="2158" y="622" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2155" y="598" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1t61dzg" bpmnElement="Activity_1oxv7uw">
+        <dc:Bounds x="2635" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1tbiuma_di" bpmnElement="Gateway_1tbiuma" isMarkerVisible="true">
+        <dc:Bounds x="2490" y="615" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2481" y="591" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0neyijo" bpmnElement="Activity_1syefru">
+        <dc:Bounds x="2265" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_16zc6zv" bpmnElement="setup_engagement_closed">
+        <dc:Bounds x="2845" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1affv0x" bpmnElement="close_project_status">
+        <dc:Bounds x="3005" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wrn1a2_di" bpmnElement="project_status_closed">
+        <dc:Bounds x="3175" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1wtay58_di" bpmnElement="Gateway_0yh0wya">
+        <dc:Bounds x="2870" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2873" y="265" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1md0yzt_di" bpmnElement="setup_engagement">
+        <dc:Bounds x="726" y="600" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nfkgej_di" bpmnElement="Event_107g6ub">
+        <dc:Bounds x="3382" y="302" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0fehdgo_di" bpmnElement="Gateway_0fehdgo" isMarkerVisible="true">
+        <dc:Bounds x="1601" y="615" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1599" y="593" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="282" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="274" y="152" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
